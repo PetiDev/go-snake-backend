@@ -1,6 +1,6 @@
 datasource db {
     provider = "mysql"
-    url      = "mysql://om9kzaz4n06o0tvuiw2s:pscale_pw_LGCqcgBoCkYsTiDAP9xTEPdNF3UU22RLgTjorKgYVUE@eu-central.connect.psdb.cloud/test?tls=true&sslaccept=accept_invalid_certs"
+    url      = env("URL")
 }
 
 generator db {
@@ -9,38 +9,9 @@ generator db {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 model Test{
     id String @id @default(cuid())
-    name String
+    pass String
+    name String @unique
     points Int
 }

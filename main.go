@@ -115,5 +115,19 @@ func main() {
 		return c.Status(fiber.StatusOK).SendString("A rekord sikeresen felülírásra került az adatbázisban a pillanatynyilag elért legmagasabb pontszámra")
 
 	})
+
+	app.Get("/delete/:id", func(c *fiber.Ctx) error {
+		if c.Query("key") != os.Getenv("API_KEY") {
+			return c.Status(fiber.StatusForbidden).SendString("Incorrect key")
+		}
+		_, err := db.DB.Test.FindMany(
+			db.Test.ID.Equals(c.Params("id")),
+		).Delete().Exec(ctx)
+
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+		}
+		return c.Status(fiber.StatusOK).SendString("Successfully deleted")
+	})
 	app.Listen(os.Getenv("HOST"))
 }

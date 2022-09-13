@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"os"
 
 	"snakeLeaderboard/db"
 
@@ -114,5 +115,5 @@ func main() {
 		return c.Status(fiber.StatusOK).SendString("A rekord sikeresen felülírásra került az adatbázisban a pillanatynyilag elért legmagasabb pontszámra")
 
 	})
-	app.Listen("127.0.0.1:8080")
+	app.Listen(os.Getenv("HOST"))
 }

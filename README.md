@@ -1,3 +1,5 @@
 # Backend for *go-snake*
 
-yes
+### A project for learning:
+- Prisma
+- GoLang

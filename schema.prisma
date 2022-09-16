@@ -11,7 +11,8 @@ generator db {
 
 model Test{
     id String @id @default(cuid())
-    pass String
     name String @unique
+    pass String
     points Int
+    achievements Int
 }

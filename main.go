@@ -13,9 +13,10 @@ import (
 )
 
 type Request struct {
-	Name     string `json:"name"`
-	Points   int    `json:"points"`
-	Password string `json:"password"`
+	Name         string `json:"name"`
+	Password     string `json:"password"`
+	Points       int    `json:"points"`
+	Achievements int    `json:"achievements"`
 }
 
 func main() {
@@ -69,9 +70,10 @@ func main() {
 		}
 
 		_, err = db.DB.Test.CreateOne(
-			db.Test.Pass.Set(string(hash)),
 			db.Test.Name.Set(data.Name),
+			db.Test.Pass.Set(string(hash)),
 			db.Test.Points.Set(data.Points),
+			db.Test.Achievements.Set(data.Achievements),
 		).Exec(ctx)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError).SendString(err.Error())

@@ -30,7 +30,7 @@ type Data struct {
 }
 
 func main() {
-
+	gameVerison := os.Getenv("GAMEVERSION")
 	db.Connect()
 	defer db.Disconnect()
 
@@ -49,6 +49,9 @@ func main() {
 		return c.SendFile("./src/index.html")
 	})
 	app.Get("/get", func(c *fiber.Ctx) error {
+		if c.Query("version") != gameVerison {
+			return c.Status(fiber.StatusTeapot).SendString("Outdated game version")
+		}
 		res, err := db.DB.Test.FindMany().OrderBy(db.Test.Points.Order(db.DESC)).Exec(ctx)
 		if err != nil {
 			return c.Status(500).SendString(err.Error())
@@ -60,6 +63,9 @@ func main() {
 
 	})
 	app.Post("/register", func(c *fiber.Ctx) error {
+		if c.Query("version") != gameVerison {
+			return c.Status(fiber.StatusTeapot).SendString("Outdated game version")
+		}
 		data := new(Request)
 		if c.BodyParser(data) != nil {
 			return c.Status(400).SendString("Sikertelen cucc")
@@ -93,6 +99,9 @@ func main() {
 		return c.Status(fiber.StatusCreated).SendString("Sikires regisztráció")
 	})
 	app.Post("/write", func(c *fiber.Ctx) error {
+		if c.Query("version") != gameVerison {
+			return c.Status(fiber.StatusTeapot).SendString("Outdated game version")
+		}
 		data := new(Request)
 		if c.BodyParser(data) != nil {
 			return c.Status(400).SendString("Sikertelen cucc")

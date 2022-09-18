@@ -3,18 +3,28 @@ package main
 import (
 	"context"
 	"os"
+	"time"
 
 	"snakeLeaderboard/db"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cache"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/gofiber/template/html"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type Request struct {
 	Name         string `json:"name"`
 	Password     string `json:"password"`
+	Points       int    `json:"points"`
+	Achievements int    `json:"achievements"`
+}
+type Data struct {
+	Id           string `json:"id"`
+	Name         string `json:"name"`
+	Pass         string `json:"pass"`
 	Points       int    `json:"points"`
 	Achievements int    `json:"achievements"`
 }
@@ -25,6 +35,7 @@ func main() {
 	defer db.Disconnect()
 
 	app := fiber.New(fiber.Config{
+		Views:        html.New("./src", ".html"),
 		Prefork:      true,
 		ServerHeader: "Never gonna give you up, Never gonna let you down",
 		AppName:      "Backend for snake leaderboard",
@@ -35,7 +46,7 @@ func main() {
 	app.Use(recover.New())
 
 	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendFile("./index.html")
+		return c.SendFile("index")
 	})
 	app.Get("/get", func(c *fiber.Ctx) error {
 		res, err := db.DB.Test.FindMany().OrderBy(db.Test.Points.Order(db.DESC)).Exec(ctx)
@@ -131,5 +142,24 @@ func main() {
 		}
 		return c.Status(fiber.StatusOK).SendString("Successfully deleted")
 	})
+
+	// Or extend your config for customization
+	app.Use(cache.New(cache.Config{
+		Next: func(c *fiber.Ctx) bool {
+			return c.Query("refresh") == "true"
+		},
+		Expiration:   5 * time.Minute,
+		CacheControl: true,
+	}))
+
+	app.Get("/scoreboard", func(c *fiber.Ctx) error {
+		res, err := db.DB.Test.FindMany().OrderBy(db.Test.Points.Order(db.DESC)).Exec(ctx)
+		if err != nil {
+			return c.Status(500).SendString(err.Error())
+		}
+		return c.Render("scoreboard", res)
+
+	})
+
 	app.Listen(os.Getenv("HOST"))
 }

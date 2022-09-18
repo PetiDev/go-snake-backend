@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            display: grid;
+            place-items: center;
+        }
+
+        #table {
+            width: 50%;
+            display: grid;
+            grid-template-columns: 1fr;
+        }
+
+        #table>p {
+            padding-block: 10px;
+            place-items: center;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        #table>p:nth-child(2n) {
+            background-color: #a32734;
+        }
+
+        @media (width < 600px) {
+            #table {
+                width: 50%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="table">
+        {{range .}}
+
+        <p>
+            <b>
+                {{.Name}}
+            </b>
+            <b>
+                {{.Achievements}}
+            </b>
+            <b>
+                {{.Points}}
+            </b>
+        </p>
+        {{end}}
+    </div>
+</body>
+
+</html>

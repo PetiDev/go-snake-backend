@@ -9,6 +9,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cache"
+	"github.com/gofiber/fiber/v2/middleware/favicon"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/template/html"
@@ -40,6 +41,10 @@ func main() {
 		ServerHeader: "Never gonna give you up, Never gonna let you down",
 		AppName:      "Backend for snake leaderboard",
 	})
+	app.Use(favicon.New(favicon.Config{
+		File: "./src/snake.ico",
+	}))
+
 	ctx := context.Background()
 
 	app.Use(logger.New())
@@ -49,9 +54,6 @@ func main() {
 		return c.SendFile("./src/index.html")
 	})
 	app.Get("/get", func(c *fiber.Ctx) error {
-		if c.Query("version") != gameVerison {
-			return c.Status(fiber.StatusTeapot).SendString("Outdated game version")
-		}
 		res, err := db.DB.Test.FindMany().OrderBy(db.Test.Points.Order(db.DESC)).Exec(ctx)
 		if err != nil {
 			return c.Status(500).SendString(err.Error())
@@ -61,6 +63,10 @@ func main() {
 		}
 		return c.JSON(res)
 
+	})
+
+	app.Get("/get/version", func(c *fiber.Ctx) error {
+		return c.Status(fiber.StatusTeapot).SendString(gameVerison)
 	})
 	app.Post("/register", func(c *fiber.Ctx) error {
 		if c.Query("version") != gameVerison {

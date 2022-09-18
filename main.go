@@ -46,7 +46,7 @@ func main() {
 	app.Use(recover.New())
 
 	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendFile("index")
+		return c.SendFile("./src/index.html")
 	})
 	app.Get("/get", func(c *fiber.Ctx) error {
 		res, err := db.DB.Test.FindMany().OrderBy(db.Test.Points.Order(db.DESC)).Exec(ctx)
